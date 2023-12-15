@@ -2,6 +2,8 @@ package com.company;
 
 import com.company.enemies.EnemyFast;
 import com.company.enemies.EnemyTurret;
+import com.company.utils.Controller;
+import com.company.utils.Player;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,29 +12,29 @@ import java.util.ArrayList;
 public class GamePanel extends JPanel implements Runnable {
 
     private Thread thread;
-    Controller controller = new Controller();
-    Player player = new Player();
-    EnemyTurret enemyTurret = new EnemyTurret(70,70);
-    EnemyTurret enemyTurret1 = new EnemyTurret(200,70);
-    EnemyTurret enemyTurret2 = new EnemyTurret(350,70);
-    EnemyFast enemyFast = new EnemyFast(100,100);
-    EnemyFast enemyFast2 = new EnemyFast(150,100);
-    EnemyFast enemyFast3 = new EnemyFast(200,100);
+    private final Controller controller = new Controller();
+    private final Player player = new Player();
+    private final EnemyTurret enemyTurret = new EnemyTurret(70,70);
+    private final EnemyTurret enemyTurret1 = new EnemyTurret(200,70);
+    private final EnemyTurret enemyTurret2 = new EnemyTurret(350,70);
+    private final EnemyFast enemyFast = new EnemyFast(100,100);
+    private final EnemyFast enemyFast2 = new EnemyFast(150,100);
+    private final EnemyFast enemyFast3 = new EnemyFast(200,100);
 
-    ArrayList<EnemyTurret> enemies = new ArrayList<EnemyTurret>();
-    ArrayList<EnemyFast> enemies1 = new ArrayList<EnemyFast>();
-    ArrayList<Player> players = new ArrayList<Player>();
+    private final ArrayList<EnemyTurret> enemies = new ArrayList<EnemyTurret>();
+    private final ArrayList<EnemyFast> enemies1 = new ArrayList<EnemyFast>();
+    private final ArrayList<Player> players = new ArrayList<Player>();
 
     // Nastavenia GUI (48x48, 768x576 px)
-    final int originalTileSize = 16;
-    final int scale = 3;
+    private final int originalTileSize = 16;
+    private final int scale = 3;
 
-    final int tileSize = originalTileSize * scale;
-    final int maxScreenCol = 16;
-    final int maxScreenRow = 12;
-    final int screenWidth = tileSize * maxScreenCol;
-    final int screenHeight = tileSize * maxScreenRow;
-    final int FPS = 60;
+    private final int tileSize = originalTileSize * scale;
+    private final int maxScreenCol = 16;
+    private final int maxScreenRow = 12;
+    private final int screenWidth = tileSize * maxScreenCol;
+    private final int screenHeight = tileSize * maxScreenRow;
+    private final int FPS = 60;
     //
 
     // nastavenia "Platna"
@@ -84,18 +86,18 @@ public class GamePanel extends JPanel implements Runnable {
 
 
         // väčšina logiky
-        if (controller.upPressed) {
-            player.updatePlayer(0, -player.playerSpeed);
-        }else if (controller.downPressed) {
-            player.updatePlayer(0, player.playerSpeed);
-        }else if (controller.leftPressed) {
-            player.updatePlayer(-player.playerSpeed, 0);
-        }else if (controller.rightPressed) {
-            player.updatePlayer(player.playerSpeed, 0);
+        if (controller.isUpPressed()) {
+            player.updatePlayer(0, -player.getPlayerSpeed());
+        }else if (controller.isDownPressed()) {
+            player.updatePlayer(0, player.getPlayerSpeed());
+        }else if (controller.isLeftPressed()) {
+            player.updatePlayer(-player.getPlayerSpeed(), 0);
+        }else if (controller.isRightPressed()) {
+            player.updatePlayer(player.getPlayerSpeed(), 0);
         }
 
         // strielanie
-        if(controller.spacePressed) {
+        if(controller.isSpacePressed()) {
             player.playerShoot();
         }
         //
@@ -106,11 +108,12 @@ public class GamePanel extends JPanel implements Runnable {
             players.get(i).playerShootUpdate();
 
             for(int j =0; j < enemies.size(); j++) {
-                if(enemies.get(j).hasCollided(players.get(i).playerRectangle)){
+                if(enemies.get(j).hasCollided(players.get(i).getPlayerRectangle())){
 
-                    players.get(i).health -= enemies.get(j).getDamage();
+                    int health = players.get(i).getHealth() - enemies.get(j).getDamage();
+                    players.get(i).setHealth(health);
 
-                    if(players.get(i).health <= 0) {
+                    if(players.get(i).getHealth() <= 0) {
                         players.remove(i);
                         JOptionPane.showMessageDialog(this, "You are dead! Game Over", "Game Over", JOptionPane.INFORMATION_MESSAGE);
                         System.exit(0);
@@ -129,7 +132,7 @@ public class GamePanel extends JPanel implements Runnable {
             enemies.get(i).update();
 
             if(player.hasCollided(enemies.get(i).getEnemyRectangle())) {
-                enemies.get(i).setHealth(enemies.get(i).getHealth() - player.weapon.damage);
+                enemies.get(i).setHealth(enemies.get(i).getHealth() - player.getWeapon().getDamage());
                 System.out.println(enemies.get(i).getHealth());
                 if(enemies.get(i).getHealth() <= 0 ) {
                     enemies.remove(i);
@@ -161,8 +164,8 @@ public class GamePanel extends JPanel implements Runnable {
 
 
         // ak hrač pojde za boundaries tak mu nastavi bud x = 0 alebo y = 0
-        player.playerRectangle.x = Math.max(0, Math.min(player.playerRectangle.x, screenWidth - tileSize));
-        player.playerRectangle.y = Math.max(0, Math.min(player.playerRectangle.y, screenHeight - tileSize));
+        player.getPlayerRectangle().x = Math.max(0, Math.min(player.getPlayerRectangle().x, screenWidth - tileSize));
+        player.getPlayerRectangle().y = Math.max(0, Math.min(player.getPlayerRectangle().y, screenHeight - tileSize));
 
         //
 
