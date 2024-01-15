@@ -5,88 +5,115 @@ import java.awt.event.KeyListener;
 
 public class Controller implements KeyListener {
 
-    // Pohyb
+    private boolean upPressed;
+    private boolean downPressed;
+    private boolean leftPressed;
+    private boolean rightPressed;
+    private boolean spacePressed;
 
-
-    private boolean upPressed, downPressed, leftPressed, rightPressed, spacePressed;
-
-    // GETTERS
+    /**
+     * Getter
+     * @return vracia hodnotu atribútu isUpPressed
+     */
     public boolean isUpPressed() {
-        return upPressed;
+        return this.upPressed;
     }
 
+    /**
+     * Getter
+     * @return vracia hodnotu atribútu isDownPressed
+     */
     public boolean isDownPressed() {
-        return downPressed;
+        return this.downPressed;
     }
 
+    /**
+     * Getter
+     * @return vracia hodnotu atribútu isLeftPressed
+     */
     public boolean isLeftPressed() {
-        return leftPressed;
+        return this.leftPressed;
     }
 
+    /**
+     * Getter
+     * @return vracia hodnotu atribútu isRightPressed
+     */
     public boolean isRightPressed() {
-        return rightPressed;
+        return this.rightPressed;
     }
 
+    /**
+     * Getter
+     * @return vracia hodnotu atribútu isSpacePressed
+     */
     public boolean isSpacePressed() {
-        return spacePressed;
+        return this.spacePressed;
     }
+
     @Override
     public void keyTyped(KeyEvent e) {
 
     }
 
-    //
-
+    /**
+     * Metoda pomocou ktorej detekujeme slačenie klavesy na klavesnici
+     * @param e
+     */
     @Override
     public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode();
 
         //hore
         if (code == KeyEvent.VK_UP) {
-            upPressed = true;
+            this.upPressed = true;
         }
         //dole
         if (code == KeyEvent.VK_DOWN) {
-            downPressed = true;
+            this.downPressed = true;
         }
         //do lava
         if (code == KeyEvent.VK_LEFT) {
-            leftPressed = true;
+            this.leftPressed = true;
         }
         //do prava
         if (code == KeyEvent.VK_RIGHT) {
-            rightPressed = true;
+            this.rightPressed = true;
         }
         //strielat
         if (code == KeyEvent.VK_SPACE) {
-            spacePressed = true;
+            this.spacePressed = true;
         }
 
     }
 
+    /**
+     * Metoda pomocou ktorej detekujeme uvolnenie klavesy na klavesnici
+     * @param e
+     */
     @Override
     public void keyReleased(KeyEvent e) {
         int code = e.getKeyCode();
 
         //hore
         if (code == KeyEvent.VK_UP) {
-            upPressed = false;
+            this.upPressed = false;
         }
         //dole
         if (code == KeyEvent.VK_DOWN) {
-            downPressed = false;
+            this.downPressed = false;
         }
         //do lava
         if (code == KeyEvent.VK_LEFT) {
-            leftPressed = false;
+            this.leftPressed = false;
         }
         //do prava
         if (code == KeyEvent.VK_RIGHT) {
-            rightPressed = false;
+            this.rightPressed = false;
         }
         //strielat
         if (code == KeyEvent.VK_SPACE) {
-            spacePressed = false;
+            this.spacePressed = false;
 
         }
     }

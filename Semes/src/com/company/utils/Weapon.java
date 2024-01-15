@@ -1,71 +1,89 @@
 package com.company.utils;
 
-import java.awt.*;
+import java.awt.Rectangle;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.util.ArrayList;
 
 public class Weapon {
 
 
-    final int bulletSpeed = 4;
-    final int attackSpeed = 500;
-    final int damage = 40;
-    ArrayList<Rectangle> bullets;
-    long lastShotTime = System.currentTimeMillis();
+    private int bulletSpeed = 6;
+    private int attackSpeed;
+    private int damage;
+    private ArrayList<Rectangle> bullets;
+    private Color color;
+    private long lastShotTime = System.currentTimeMillis();
 
-    public Weapon() {
-        this.bullets = new ArrayList<Rectangle>();
+
+    /**
+     * Konštruktor
+     * @param damage - sila zbrane
+     * @param attackSpeed - rychlosť útoku zbrane
+     * @param color - farba gulky
+     */
+    public Weapon(int damage, int attackSpeed, Color color) {
+        this.color = color;
+        this.damage = damage;
+        this.attackSpeed = attackSpeed;
+        this.bullets = new ArrayList<>();
     }
 
-    // GETTERS SETTERS
-    public int getBulletSpeed() {
-        return bulletSpeed;
-    }
-
-    public int getAttackSpeed() {
-        return attackSpeed;
-    }
-
+    /**
+     *  Getter
+     * @return vracia hodnotu atribútu damage
+     */
     public int getDamage() {
-        return damage;
+        return this.damage;
     }
 
+    /**
+     *  Getter
+     * @return vracia hodnotu zoznamu bullets
+     */
     public ArrayList<Rectangle> getBullets() {
-        return bullets;
+        return this.bullets;
     }
 
-    public void setBullets(ArrayList<Rectangle> bullets) {
-        this.bullets = bullets;
-    }
-    //
 
-
-    // vykreslenie pozicie kde začinaju bullets a nastavenie attack speedu
+    /**
+     * Metóda pomocou ktorej nastavujeme začiatočnu poziciu gulky
+     * @param playerX - os x
+     * @param playerY - os y
+     */
     public void shoot(int playerX, int playerY) {
         long currentTime = System.currentTimeMillis();
-        if(currentTime - lastShotTime >= attackSpeed) {
-            bullets.add(new Rectangle(playerX + (16*3)/2, playerY, 4, 8));
-            lastShotTime = currentTime;
+        if (currentTime - this.lastShotTime >= this.attackSpeed) {
+            this.bullets.add(new Rectangle(playerX + (16 * 3) / 2, playerY, 4, 8));
+            this.lastShotTime = currentTime;
 
         }
     }
 
-    // updatovanie bulletov a nastavenie pohybu bulletov
+    /**
+     * Metóda pomoocu ktorej posúvame gulku po osi Y
+     */
     public void update() {
-        for (int i = 0; i < bullets.size(); i++) {
-            Rectangle bullet = bullets.get(i);
-            bullet.y -= bulletSpeed;
+        ArrayList<Rectangle> bulletsToRemove = new ArrayList<>();
+
+        for (Rectangle bullet : new ArrayList<>(this.bullets)) {
+            bullet.y -= this.bulletSpeed;
 
             if (bullet.y + bullet.height < 0) {
-                bullets.remove(i);
-                i--;
+                bulletsToRemove.add(bullet);
             }
         }
+
+        this.bullets.removeAll(bulletsToRemove);
     }
 
-    // vykreslovanie bulletov
+    /**
+     * metóda pomocou ktorej vykreslujeme gulky na JPanel
+     * @param graphics kreslí na JPanel
+     */
     public void paintComponent(Graphics graphics) {
-        graphics.setColor(Color.RED);
-        for (Rectangle bullet : bullets) {
+        graphics.setColor(Color.BLACK);
+        for (Rectangle bullet : this.bullets) {
             graphics.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
         }
     }

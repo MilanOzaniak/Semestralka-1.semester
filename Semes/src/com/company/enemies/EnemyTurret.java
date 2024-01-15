@@ -1,6 +1,14 @@
 package com.company.enemies;
 
-import java.awt.*;
+import com.company.objects.Wall;
+import com.company.utils.Player;
+
+import javax.swing.ImageIcon;
+import java.awt.Rectangle;
+import java.awt.Image;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Color;
 import java.util.ArrayList;
 
 public class EnemyTurret {
@@ -8,33 +16,44 @@ public class EnemyTurret {
     private int enemyY;
 
     private final int bulletSpeed = 4;
-    private final int attackSpeed = 700;
-    private int damage = 10;
-    private int health = 100;
+    private final int attackSpeed = 1000;
+    private int damage = 25;
+    private int health = 150;
+    private int gold = 25;
     private ArrayList<Rectangle> upBullets;
     private ArrayList<Rectangle> downBullets;
     private ArrayList<Rectangle> rightBullets;
     private ArrayList<Rectangle> leftBullets;
     private Rectangle enemyRectangle;
+    private Image image;
 
     private long lastShotTime = System.currentTimeMillis();
 
+    /**
+     * Konštruktor - Nastavenie pozicie x a y
+     * @param x - pozicia na osi x
+     * @param y - pozicia na osi y
+     */
     public EnemyTurret(int x, int y) {
-        this.upBullets = new ArrayList<Rectangle>();
-        this.downBullets = new ArrayList<Rectangle>();
-        this.rightBullets = new ArrayList<Rectangle>();
-        this.leftBullets = new ArrayList<Rectangle>();
+        this.upBullets = new ArrayList<>();
+        this.downBullets = new ArrayList<>();
+        this.rightBullets = new ArrayList<>();
+        this.leftBullets = new ArrayList<>();
         this.enemyX = x;
         this.enemyY = y;
-        enemyRectangle = new Rectangle(enemyX, enemyY, 16*3,16*3);
+        this.enemyRectangle = new Rectangle(this.enemyX, this.enemyY, 16 * 3, 16 * 3);
+        this.image = new ImageIcon("./pics/turrets/turret_all.png").getImage();
     }
 
+    /**
+     * metóda pomocou ktorej vykreslujeme objekt a gulky na JPanel
+     * @param graphics kreslí na JPanel
+     */
     public void paintComponent(Graphics graphics) {
 
-        Graphics2D graphics2D = (Graphics2D) graphics;
+        Graphics2D graphics2D = (Graphics2D)graphics;
         // vykreslenie enemy
-        graphics2D.setColor(Color.WHITE);
-        graphics2D.fillRect(enemyX, enemyY, 16 * 3, 16 * 3);
+        graphics2D.drawImage(this.image, this.enemyX, this.enemyY, 16 * 3, 16 * 3, null);
         //
 
         // vykreslenie enemy bullet
@@ -62,86 +81,113 @@ public class EnemyTurret {
 
     }
 
+    /**
+     * Getter
+     * @return vracia hodnotu atribútu health
+     */
     public int getHealth() {
         return this.health;
     }
 
+    /**
+     * Setter, nastavuje hodnotu atribútu health
+     * @param health
+     */
     public void setHealth(int health) {
         this.health = health;
     }
 
-
-    public int getDamage() {
-        return this.damage;
-    }
-
+    /**
+     * Getter
+     * @return vracia hodnotu atribútu enemyRectangle
+     */
     public Rectangle getEnemyRectangle() {
         return this.enemyRectangle;
     }
 
-    // vykreslenie pozicie kde začinaju bullets a nastavenie attack speedu
+    /**
+     * Getter
+     * @return vracia hodnotu atribútu gold
+     */
+    public int getGold() {
+        return this.gold;
+    }
+
+    /**
+     * metóda pomocou ktorej nastavujeme začiatočnu polohu gulky a nastavujeme ako často môže strielať
+     */
     public void enemyShoot() {
         long currentTime = System.currentTimeMillis();
-        if(currentTime - this.lastShotTime >= this.attackSpeed) {
-            this.upBullets.add(new Rectangle(this.enemyX + (16*3)/2, this.enemyY, 4, 8));
-            this.downBullets.add(new Rectangle(this.enemyX + (16*3)/2, this.enemyY + 16*3, 4, 8));
-            this.rightBullets.add(new Rectangle(this.enemyX + 16*3, this.enemyY + (16*3) / 2, 8, 4));
-            this.leftBullets.add(new Rectangle(this.enemyX, this.enemyY + (16*3)/2, 8, 4));
+        if (currentTime - this.lastShotTime >= this.attackSpeed) {
+            this.upBullets.add(new Rectangle(this.enemyX + (16 * 3) / 2, this.enemyY, 4, 8));
+            this.downBullets.add(new Rectangle(this.enemyX + (16 * 3) / 2, this.enemyY + 16 * 3, 4, 8));
+            this.rightBullets.add(new Rectangle(this.enemyX + 16 * 3, this.enemyY + (16 * 3) / 2, 8, 4));
+            this.leftBullets.add(new Rectangle(this.enemyX, this.enemyY + (16 * 3) / 2, 8, 4));
             this.lastShotTime = currentTime;
         }
     }
-    //
 
-    // updatovanie bulletov a nastavenie pohybu bulletov
+    /**
+     * metóda pomocou ktorej aktualizujeme polohu gulky a vymazavame ked prejde za okraj mapy
+     */
     public void update() {
-        for (int i = 0; i < this.upBullets.size(); i++) {
+        int i = 0;
+        while (i < this.upBullets.size()) {
             Rectangle bulletUp = this.upBullets.get(i);
             bulletUp.y -= this.bulletSpeed;
-
             if (bulletUp.y  < 0) {
                 this.upBullets.remove(i);
                 i--;
             }
+            i++;
         }
 
-        for (int i = 0; i < this.downBullets.size(); i++) {
-            Rectangle bulletDown = this.downBullets.get(i);
+        int j = 0;
+        while (j < this.downBullets.size()) {
+            Rectangle bulletDown = this.downBullets.get(j);
             bulletDown.y += this.bulletSpeed;
 
             if (bulletDown.y  > 576) {
-                this.downBullets.remove(i);
-                i--;
+                this.downBullets.remove(j);
+                j--;
             }
+            j++;
         }
 
-        for (int i = 0; i < this.rightBullets.size(); i++) {
-            Rectangle bulletRight = this.rightBullets.get(i);
+        int k = 0;
+        while (k < this.rightBullets.size()) {
+            Rectangle bulletRight = this.rightBullets.get(k);
             bulletRight.x += this.bulletSpeed;
 
             if (bulletRight.x  > 768) {
-                this.rightBullets.remove(i);
-                i--;
+                this.rightBullets.remove(k);
+                k--;
             }
+            k++;
         }
 
-        for (int i = 0; i < this.leftBullets.size(); i++) {
-            Rectangle bulletLeft = this.leftBullets.get(i);
+        int l = 0;
+        while (l < this.leftBullets.size()) {
+            Rectangle bulletLeft = this.leftBullets.get(l);
             bulletLeft.x -= this.bulletSpeed;
 
             if (bulletLeft.x  < 0) {
-                this.leftBullets.remove(i);
-                i--;
+                this.leftBullets.remove(l);
+                l--;
             }
+            l++;
         }
     }
     //
 
-    // detekcia hitnutia bulletu
-    public boolean hasCollided(Rectangle player) {
+    /**
+     * metóda pomocou ktorej detekujeme či nepriatel zasiahol hrača
+     * @return true ak áno, false ak nie
+     */
+    public boolean hasHit(Rectangle player) {
         for (int i = 0; i < this.upBullets.size(); i++) {
             if (this.upBullets.get(i).intersects(player)) {
                 this.upBullets.remove(i);
-                System.out.println("UPHIT");
                 return true;
             }
 
@@ -150,7 +196,6 @@ public class EnemyTurret {
         for (int i = 0; i < this.downBullets.size(); i++) {
             if (this.downBullets.get(i).intersects(player)) {
                 this.downBullets.remove(i);
-                System.out.println("DOWNHIT");
                 return true;
             }
         }
@@ -158,7 +203,6 @@ public class EnemyTurret {
         for (int i = 0; i < this.rightBullets.size(); i++) {
             if (this.rightBullets.get(i).intersects(player)) {
                 this.rightBullets.remove(i);
-                System.out.println("RIGHTHIT");
                 return true;
             }
         }
@@ -166,13 +210,36 @@ public class EnemyTurret {
         for (int i = 0; i < this.leftBullets.size(); i++) {
             if (this.leftBullets.get(i).intersects(player)) {
                 this.leftBullets.remove(i);
-                System.out.println("LEFTHIT");
                 return true;
             }
         }
 
-        //System.out.println("NOHIT");
         return false;
+    }
+
+
+    /**
+     * metóda pomocou ktorej, ak bol hrač zasiahnuty tak odoberame životy
+     */
+    public void hitPlayer(Player player) {
+
+        Rectangle rect = player.getPlayerRectangle();
+        if (this.hasHit(rect)) {
+            player.setHealth(player.getHealth() - this.damage);
+        }
+    }
+
+    /**
+     * metóda pomocou ktorej, ak bola stena zasiahnuta tak vymazavame gulku
+     */
+    public void hitWall(ArrayList<Wall> walls) {
+        for (int i = 0; i < walls.size(); i++) {
+            for (int j = 0; j < walls.get(i).getRects().size(); j++) {
+                if (this.hasHit(walls.get(i).getRects().get(j))) {
+                    System.out.println("");
+                }
+            }
+        }
     }
     //
 
